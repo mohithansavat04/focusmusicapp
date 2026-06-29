@@ -46,6 +46,8 @@ const setupAdmin = async (app) => {
     },
   });
 
+  const __dirname = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
+
   const admin = new AdminJS({
     componentLoader,
     resources: [
@@ -124,13 +126,14 @@ const setupAdmin = async (app) => {
       companyName: 'Focus Music Admin',
       softwareBrothers: false,
     },
+    assets: {
+      components: process.env.NODE_ENV === 'production' ? path.join(__dirname, '.adminjs', 'bundle.js') : undefined,
+    },
   });
 
-  // Force bundling in production and wait for it to finish synchronously
-  const originalNodeEnv = process.env.NODE_ENV;
-  process.env.NODE_ENV = 'development';
-  await admin.initialize();
-  process.env.NODE_ENV = originalNodeEnv;
+  if (process.env.NODE_ENV !== 'production') {
+    admin.watch();
+  }
   
   const adminRouter = AdminJSExpress.buildRouter(admin);
   app.use(admin.options.rootPath, adminRouter);
