@@ -57,6 +57,16 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/focusmusic'
       res.send('Focus Music API is running. Go to /admin to manage the app.');
     });
 
+    app.get('/api/debug-fs', async (req, res) => {
+      const fs = await import('fs');
+      res.json({
+        cwd: process.cwd(),
+        files: fs.readdirSync(process.cwd()),
+        adminjsExists: fs.existsSync('.adminjs'),
+        adminjsFiles: fs.existsSync('.adminjs') ? fs.readdirSync('.adminjs') : null
+      });
+    });
+
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Admin Panel available at http://localhost:${PORT}/admin`);

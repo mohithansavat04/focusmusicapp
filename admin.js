@@ -131,9 +131,19 @@ const setupAdmin = async (app) => {
     },
   });
 
-  // Bypass AdminJS asset serving bugs in production by manually serving the bundle
+  // Bypass AdminJS asset serving bugs by loading the bundle into memory
+  const bundlePath = path.join(__dirname, '.adminjs', 'bundle.js');
+  let bundleContent = '';
+  try {
+    bundleContent = fs.readFileSync(bundlePath, 'utf8');
+    console.log('Successfully loaded AdminJS custom components bundle. Length:', bundleContent.length);
+  } catch (err) {
+    console.error('CRITICAL: Failed to read AdminJS bundle at', bundlePath, 'Error:', err.message);
+  }
+
   app.get(admin.options.rootPath + '/frontend/assets/components.bundle.js', (req, res) => {
-    res.sendFile(path.join(process.cwd(), '.adminjs', 'bundle.js'));
+    res.type('application/javascript');
+    res.send(bundleContent);
   });
 
   const adminRouter = AdminJSExpress.buildRouter(admin);
