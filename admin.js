@@ -126,7 +126,11 @@ const setupAdmin = async (app) => {
     },
   });
 
+  // Force bundling in production to fix "Component has not been bundled" errors on Render
+  const originalNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
   admin.watch();
+  process.env.NODE_ENV = originalNodeEnv;
   
   const adminRouter = AdminJSExpress.buildRouter(admin);
   app.use(admin.options.rootPath, adminRouter);
