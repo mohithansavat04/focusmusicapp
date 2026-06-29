@@ -131,10 +131,11 @@ const setupAdmin = async (app) => {
     },
   });
 
-  if (process.env.NODE_ENV !== 'production') {
-    admin.watch();
-  }
-  
+  // Bypass AdminJS asset serving bugs in production by manually serving the bundle
+  app.get(admin.options.rootPath + '/frontend/assets/components.bundle.js', (req, res) => {
+    res.sendFile(path.join(process.cwd(), '.adminjs', 'bundle.js'));
+  });
+
   const adminRouter = AdminJSExpress.buildRouter(admin);
   app.use(admin.options.rootPath, adminRouter);
 };
