@@ -57,7 +57,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/focusmusic'
       res.send('Focus Music API is running. Go to /admin to manage the app.');
     });
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Admin Panel available at http://localhost:${PORT}/admin`);
     });
